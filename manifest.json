@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "canvas-link-creator",
+	"name": "Canvas Link Creator",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Plugin that adds a command to create links in a canvas based in the links of the imported notes, supporting named links",
+	"author": "Rodrigo Alejandro Fernández",
+	"authorUrl": "",
+	"fundingUrl": "",
 	"isDesktopOnly": false
 }
