@@ -2,6 +2,12 @@ export class TextNode {
   id: String;
   position: [number, number];
   text: String;
+
+  constructor(id: String, x: number, y: number, text: String) {
+    this.id = id;
+    this.position = [x, y];
+    this.text = text;
+  }
 }
 
 export class NoteNode {

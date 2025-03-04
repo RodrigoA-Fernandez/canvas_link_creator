@@ -1,6 +1,8 @@
-import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
-import { getEdges, getMissingLinks, getNodesInCanvas, isLink } from 'src/utils/canvas_utils';
-import { Node } from 'src/@types/Node'
+import { App, ItemView, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { CanvasState } from 'src/utils/canvas_utils';
+import { Node, TextNode } from 'src/@types/Node'
+import { Edge } from 'src/@types/Edge';
+
 
 // Remember to rename these classes and interfaces!
 
@@ -18,21 +20,50 @@ export default class MyPlugin extends Plugin {
   async onload() {
     await this.loadSettings();
     this.addCommand({
-      id: 'crear-nodo',
-      name: 'Crear nodo en Canvas',
-      checkCallback: () => {
-      }
-    });
-    this.registerDomEvent(document, 'click', (_: MouseEvent) => {
-      const nodes: Array<Node> | null = getNodesInCanvas(this.app);
-      const edges = getEdges(this.app);
-      if (nodes === null || edges === null) {
-        return;
-      }
-      // console.log(nodes);
-      getMissingLinks(nodes, edges, this.app);
-      // console.log(nodes);
+      id: 'create-link-edges',
+      name: 'Create edges on canvas based on links between nodes',
+      checkCallback: (check: boolean) => {
+        const canvasView = this.app.workspace.getActiveViewOfType(ItemView);
+        if (canvasView === null) {
+          return false;
+        }
 
+        let canvasState: CanvasState = new CanvasState(this.app, canvasView);
+        //@ts-ignore
+        const canvas = canvasView.canvas;
+        const currentData = canvas.getData();
+
+        if (!check) {
+          // console.log(canvasState.edgesFromMissingLinks());
+
+          let [newEdges, newNodes]: [Edge[], TextNode[]] = canvasState.edgesFromMissingLinks();
+          currentData.edges = [
+            ...currentData.edges,
+            ...newEdges
+          ];
+          currentData.nodes = [
+            ...currentData.nodes,
+            ...(newNodes.map((e) => {
+              let node = {
+                id: e.id,
+                x: e.position[0],
+                y: e.position[1],
+                width: 250,
+                height: 60,
+                type: "text",
+                text: e.text
+              };
+              return node;
+            }))
+          ]
+
+          canvas.setData(currentData);
+          canvas.requestSave();
+        }
+
+        // console.log(currentData);
+        return true;
+      }
     });
 
   }
